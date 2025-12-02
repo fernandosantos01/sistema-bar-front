@@ -14,8 +14,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api";
-// Importei o ícone QrCode
 import { Users, LogOut, Settings, QrCode } from "lucide-react";
+// IMPORTANTE: Importando o componente de tema
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface Mesa {
   id: number;
@@ -29,16 +30,13 @@ export default function MesasPage() {
   const [mesas, setMesas] = useState<Mesa[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // States para abrir mesa
   const [selectedMesa, setSelectedMesa] = useState<Mesa | null>(null);
   const [quantidadePessoas, setQuantidadePessoas] = useState("");
   const [isOpeningMesa, setIsOpeningMesa] = useState(false);
 
-  // NOVO: States para o QR Code
   const [showQrModal, setShowQrModal] = useState(false);
   const [qrMesa, setQrMesa] = useState<Mesa | null>(null);
 
-  // State para verificar se é admin (para mostrar botão de engrenagem)
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -88,8 +86,6 @@ export default function MesasPage() {
     }
   };
 
-  // NOVO: Função para abrir o modal do QR Code
-  // O e.stopPropagation evita que o clique no botão abra a mesa ao mesmo tempo
   const handleOpenQrCode = (e: React.MouseEvent, mesa: Mesa) => {
     e.stopPropagation();
     setQrMesa(mesa);
@@ -115,7 +111,7 @@ export default function MesasPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background transition-colors duration-300">
       <header className="border-b bg-card sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div>
@@ -124,7 +120,12 @@ export default function MesasPage() {
               Selecione uma mesa para gerenciar
             </p>
           </div>
-          <div className="flex gap-2">
+
+          {/* AQUI ESTÁ A MUDANÇA DO PASSO 3 */}
+          <div className="flex items-center gap-2">
+            {/* Botão de Tema adicionado aqui */}
+            <ThemeToggle />
+
             {isAdmin && (
               <Button
                 variant="outline"
@@ -155,7 +156,6 @@ export default function MesasPage() {
               }`}
               onClick={() => handleMesaClick(mesa)}
             >
-              {/* Botão de QR Code no canto superior direito */}
               {mesa.status === "OCUPADA" && (
                 <Button
                   variant="ghost"
@@ -185,10 +185,9 @@ export default function MesasPage() {
         </div>
       </main>
 
-      {/* Modal Abrir Mesa */}
       <Dialog
         open={selectedMesa !== null}
-        onOpenChange={(open) => !open && setSelectedMesa(null)}
+        onOpenChange={(open: boolean) => !open && setSelectedMesa(null)}
       >
         <DialogContent>
           <DialogHeader>
@@ -230,7 +229,6 @@ export default function MesasPage() {
         </DialogContent>
       </Dialog>
 
-      {/* NOVO: Modal do QR Code */}
       <Dialog open={showQrModal} onOpenChange={setShowQrModal}>
         <DialogContent className="sm:max-w-sm text-center">
           <DialogHeader>
@@ -238,8 +236,6 @@ export default function MesasPage() {
           </DialogHeader>
 
           <div className="flex flex-col items-center justify-center py-6 space-y-4">
-            {/* Aqui puxamos a imagem direto do Backend Java */}
-            {/* Importante: O endpoint /qrcode/mesa/{id} é público no SecurityConfigurations */}
             {qrMesa && qrMesa.comandaId && (
               <div className="bg-white p-4 rounded-lg shadow-inner">
                 <img

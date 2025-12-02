@@ -34,8 +34,9 @@ import {
   TrendingUp,
   DollarSign,
 } from "lucide-react";
+// IMPORTANTE: Importando o componente de tema
+import { ThemeToggle } from "@/components/theme-toggle";
 
-// --- INTERFACES ---
 interface Produto {
   id: number;
   nome: string;
@@ -66,22 +67,19 @@ export default function AdminPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
-  // Dados Gerais
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [mesas, setMesas] = useState<Mesa[]>([]);
 
-  // Configurações
   const [editCouvert, setEditCouvert] = useState("");
   const [editGorjetaComida, setEditGorjetaComida] = useState("");
   const [editGorjetaBebida, setEditGorjetaBebida] = useState("");
 
-  // Relatórios
   const [dataInicio, setDataInicio] = useState(
     new Date().toISOString().split("T")[0]
-  ); // Hoje
+  );
   const [dataFim, setDataFim] = useState(
     new Date().toISOString().split("T")[0]
-  ); // Hoje
+  );
   const [faturamento, setFaturamento] = useState<RelatorioFaturamento | null>(
     null
   );
@@ -92,7 +90,6 @@ export default function AdminPage() {
     RelatorioItem[]
   >([]);
 
-  // Modais
   const [showProdutoModal, setShowProdutoModal] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentProduto, setCurrentProduto] = useState<Produto | null>(null);
@@ -109,7 +106,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     fetchData();
-    fetchRelatorios(); // Carrega relatórios iniciais
+    fetchRelatorios();
   }, []);
 
   const fetchData = async () => {
@@ -135,16 +132,13 @@ export default function AdminPage() {
     }
   };
 
-  // --- NOVA FUNÇÃO DE RELATÓRIOS ---
   const fetchRelatorios = async () => {
     try {
-      // 1. Faturamento
       const fatRes = await api.get(
         `/admin/relatorios/faturamento?inicio=${dataInicio}&fim=${dataFim}`
       );
       setFaturamento(fatRes.data);
 
-      // 2. Rankings (Independem de data no backend atual, ou você pode adaptar)
       const vendidosRes = await api.get(
         "/admin/relatorios/itens-mais-vendidos"
       );
@@ -159,7 +153,6 @@ export default function AdminPage() {
     }
   };
 
-  // --- FUNÇÕES DE PRODUTO ---
   const handleOpenNovoProdutoModal = () => {
     setIsEditMode(false);
     setCurrentProduto(null);
@@ -205,7 +198,6 @@ export default function AdminPage() {
     }
   };
 
-  // --- FUNÇÕES DE CONFIGURAÇÃO ---
   const handleSaveConfiguracoes = async () => {
     try {
       await api.put("/admin/configuracoes", {
@@ -221,7 +213,6 @@ export default function AdminPage() {
     }
   };
 
-  // --- FUNÇÕES DE MESA ---
   const handleOpenNovaMesaModal = () => {
     setNovaMesaNumero("");
     setShowMesaModal(true);
@@ -270,28 +261,35 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background transition-colors duration-300">
       <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push("/mesas")}
-            className="mb-2"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar
-          </Button>
-          <h1 className="text-2xl font-bold">Área Administrativa</h1>
-          <p className="text-sm text-muted-foreground">
-            Gestão completa do sistema
-          </p>
+        {/* AQUI ESTÁ A MUDANÇA: Usamos flex e justify-between para separar os lados */}
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.push("/mesas")}
+              className="mb-2 pl-0 hover:bg-transparent"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Voltar
+            </Button>
+            <h1 className="text-2xl font-bold">Área Administrativa</h1>
+            <p className="text-sm text-muted-foreground">
+              Gestão completa do sistema
+            </p>
+          </div>
+
+          {/* Botão de Tema no canto direito */}
+          <div>
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="produtos" className="w-full">
-          {/* Adicionamos a aba RELATÓRIOS na lista */}
           <TabsList className="grid w-full grid-cols-4 max-w-2xl">
             <TabsTrigger value="produtos">Produtos</TabsTrigger>
             <TabsTrigger value="mesas">Mesas</TabsTrigger>
@@ -299,7 +297,6 @@ export default function AdminPage() {
             <TabsTrigger value="configuracoes">Config</TabsTrigger>
           </TabsList>
 
-          {/* --- ABA PRODUTOS --- */}
           <TabsContent value="produtos" className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">Cardápio</h2>
@@ -337,8 +334,8 @@ export default function AdminPage() {
                             <span
                               className={`inline-block px-2 py-1 rounded text-xs ${
                                 produto.categoria === "COMIDA"
-                                  ? "bg-orange-100 text-orange-800"
-                                  : "bg-blue-100 text-blue-800"
+                                  ? "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
+                                  : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                               }`}
                             >
                               {produto.categoria}
@@ -348,8 +345,8 @@ export default function AdminPage() {
                             <span
                               className={`inline-block px-2 py-1 rounded text-xs ${
                                 produto.disponivel
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-red-100 text-red-800"
+                                  ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                                  : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
                               }`}
                             >
                               {produto.disponivel ? "Ativo" : "Inativo"}
@@ -375,7 +372,6 @@ export default function AdminPage() {
             </Card>
           </TabsContent>
 
-          {/* --- ABA MESAS --- */}
           <TabsContent value="mesas" className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">Mesas</h2>
@@ -395,8 +391,8 @@ export default function AdminPage() {
                     <span
                       className={`text-xs mt-2 font-medium ${
                         mesa.status === "LIVRE"
-                          ? "text-green-600"
-                          : "text-red-600"
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
                       }`}
                     >
                       {mesa.status}
@@ -417,7 +413,6 @@ export default function AdminPage() {
             </div>
           </TabsContent>
 
-          {/* --- ABA RELATÓRIOS (NOVO) --- */}
           <TabsContent value="relatorios" className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-muted/30 p-4 rounded-lg border">
               <div>
@@ -453,7 +448,6 @@ export default function AdminPage() {
               </div>
             </div>
 
-            {/* KPIs */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -490,7 +484,6 @@ export default function AdminPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Mais Vendidos */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
@@ -531,7 +524,6 @@ export default function AdminPage() {
                 </CardContent>
               </Card>
 
-              {/* Maior Faturamento */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
@@ -554,7 +546,7 @@ export default function AdminPage() {
                           </span>
                         </div>
                         <div className="text-right">
-                          <div className="font-bold text-green-600">
+                          <div className="font-bold text-green-600 dark:text-green-400">
                             R$ {item.totalFaturado.toFixed(2)}
                           </div>
                         </div>
@@ -571,7 +563,6 @@ export default function AdminPage() {
             </div>
           </TabsContent>
 
-          {/* --- ABA CONFIGURAÇÕES --- */}
           <TabsContent value="configuracoes" className="space-y-4">
             <div className="flex items-center gap-2">
               <Settings className="h-5 w-5" />
@@ -623,7 +614,6 @@ export default function AdminPage() {
         </Tabs>
       </main>
 
-      {/* MODAIS (MANTIDOS IGUAIS) */}
       <Dialog open={showProdutoModal} onOpenChange={setShowProdutoModal}>
         <DialogContent>
           <DialogHeader>
