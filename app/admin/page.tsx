@@ -104,10 +104,25 @@ export default function AdminPage() {
   const [showMesaModal, setShowMesaModal] = useState(false);
   const [novaMesaNumero, setNovaMesaNumero] = useState("");
 
-  useEffect(() => {
-    fetchData();
-    fetchRelatorios();
-  }, []);
+    useEffect(() => {
+        checkAuthAndFetch()
+    }, [])
+    const checkAuthAndFetch = () => {
+        // 1. Verifica se tem token
+        const token = localStorage.getItem("token")
+        if (!token) {
+            router.push("/login")
+            return
+        }
+        const perfil = localStorage.getItem("perfil_usuario")
+        if (perfil !== "ADMIN") {
+            alert("Acesso negado: Apenas administradores podem acessar esta área.")
+            router.push("/mesas")
+            return
+        }
+        fetchData()
+        fetchRelatorios()
+    }
 
   const fetchData = async () => {
     try {
@@ -249,16 +264,16 @@ export default function AdminPage() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="h-8 w-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Carregando...</p>
-        </div>
-      </div>
-    );
-  }
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-background">
+                <div className="text-center">
+                    <div className="h-8 w-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4" />
+                    <p className="text-muted-foreground">Verificando permissões...</p>
+                </div>
+            </div>
+        )
+    }
 
   return (
     <div className="min-h-screen bg-background transition-colors duration-300">
