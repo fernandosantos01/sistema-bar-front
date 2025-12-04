@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api";
-import { Users, LogOut, Settings, QrCode } from "lucide-react";
+import { Users, LogOut, Settings, QrCode, BookOpen} from "lucide-react";
 // IMPORTANTE: Importando o componente de tema
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -125,7 +125,10 @@ export default function MesasPage() {
           <div className="flex items-center gap-2">
             {/* Botão de Tema adicionado aqui */}
             <ThemeToggle />
-
+              <Button variant="outline" size="sm" onClick={() => router.push("/cardapio")}>
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  Cardápio
+              </Button>
             {isAdmin && (
               <Button
                 variant="outline"

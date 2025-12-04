@@ -37,7 +37,7 @@ interface Comanda {
   id: number;
   mesaNumero: number;
   status: string;
-  quantidadePessoas: number;
+  qtdPessoasMesa: number;
   couvertHabilitado: boolean; // No Java é 'couvertHabilitado', verifique se o JSON bate ou ajuste aqui
   itens: ItemComanda[];
   subtotalComida: number;
@@ -243,7 +243,7 @@ export default function ComandaPage() {
             <div>
               <h1 className="text-2xl font-bold">Mesa {comanda.mesaNumero}</h1>
               <p className="text-sm text-muted-foreground">
-                {comanda.quantidadePessoas} pessoa(s) - Status: {comanda.status}
+                {comanda.qtdPessoasMesa} pessoa(s) - Status: {comanda.status}
               </p>
             </div>
             <div className="flex items-center gap-2">

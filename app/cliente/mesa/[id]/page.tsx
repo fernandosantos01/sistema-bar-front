@@ -19,7 +19,7 @@ interface ComandaCliente {
   id: number;
   mesaNumero: number;
   status: string;
-  quantidadePessoas: number;
+  qtdPessoasMesa: number;
   itens: ItemComanda[];
   subtotalComida: number;
   subtotalBebida: number;
@@ -129,7 +129,7 @@ export default function ClienteMesaPage() {
           <CardContent>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Pessoas:</span>
-              <span className="font-medium">{comanda.quantidadePessoas}</span>
+              <span className="font-medium">{comanda.qtdPessoasMesa}</span>
             </div>
           </CardContent>
         </Card>
